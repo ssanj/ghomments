@@ -1,0 +1,19 @@
+[
+    // { "keys": ["super+shift+e"], "command": "scoggle", "args": {"matcher": "prefix_suffix_matcher"},
+    //     "context" : [{"key": "selector", "operator": "equal", "operand": "source.scala", "match_all": true}]},
+
+    // { "keys": ["super+shift+ctrl+e"], "command": "scoggle", "args": {"matcher": "prefix_wildcard_suffix_matcher"},
+    // "context" : [{"key": "selector", "operator": "equal", "operand": "source.scala", "match_all": true}]},
+
+    // { "keys": ["super+shift+ctrl+x"], "command": "scoggle", "args": {"matcher": "wildcard_prefix_wildcard_suffix_matcher"},
+    // "context" : [{"key": "selector", "operator": "equal", "operand": "source.scala", "match_all": true}]},
+
+    // { "keys": ["super+shift+g"], "command": "package", "args" : {"style" : "full"} },
+
+    // { "keys": ["super+shift+h"], "command": "package", "args" : {"style" : "step"} },
+
+    // { "keys": ["super+shift+ctrl+t"], "command": "prompt_create_test" },
+
+    // { "keys": ["super+shift+ctrl+m"], "command": "show_module" },
+
+]
