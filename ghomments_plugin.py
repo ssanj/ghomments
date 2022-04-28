@@ -3,6 +3,7 @@ import sublime_plugin
 import os
 import logging
 import json
+import html
 
 
 class GhommentsCommand(sublime_plugin.TextCommand):
@@ -24,11 +25,10 @@ class GhommentsCommand(sublime_plugin.TextCommand):
             comment_file_name = "{}.{}".format(file_name, "comment")
             if os.path.exists(comment_file_name):
                 self.logger.debug("file found")
-                comment_file = open(comment_file_name)
-                data = json.load(comment_file)
-                line_markup_dict = self.get_file_comments(data)
-                self.show_phantoms(line_markup_dict)
-                comment_file.close()
+                with open(comment_file_name, encoding='utf-8') as comment_file:
+                    data = json.load(comment_file)
+                    line_markup_dict = self.get_file_comments(data)
+                    self.show_phantoms(line_markup_dict)
 
             else:
                 self.logger.debug("file not found")
