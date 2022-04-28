@@ -113,6 +113,7 @@ class GhommentsCommand(sublime_plugin.TextCommand):
         # return '<div><span>@{}</span><a href="{}">link</a><div>{}</div><div>'.format(username, link, comment_text)
         return '''
                 <div class="gh-comment-author">
+                  <img width="16" height="16" src="{}" />
                   <b>{}</b>
                 </div>
                 <div class="gh-comment-text">
@@ -121,4 +122,4 @@ class GhommentsCommand(sublime_plugin.TextCommand):
                 <div class="gh-comment-comment_link">
                   <a href="{}">open comment on GH</a>
                 </div>
-        '''.format(username, comment_text, link)
+        '''.format(gravatar, username, comment_text, link)
