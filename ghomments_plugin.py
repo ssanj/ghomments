@@ -37,8 +37,8 @@ class GhommentsCommand(sublime_plugin.TextCommand):
 
     def show_phantoms(self, line_markup_dict):
         self.logger.debug("spooky")
+        self.view.erase_phantoms("GHComments") # remove all existing phantoms
         self.ps = sublime.PhantomSet(self.view, "GHComments")
-        self.ps.update([]) # remove all existing phantoms
         self.phantoms = []
 
         for (line, markup) in line_markup_dict.items():
@@ -69,6 +69,7 @@ class GhommentsCommand(sublime_plugin.TextCommand):
                 <style>
                         body {{
                           background-color:  color(var(--background) alpha(0.25));
+                          margin: 10px;
                         }}
 
                         .gh-comment-line {{
