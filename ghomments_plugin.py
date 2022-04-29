@@ -36,15 +36,38 @@ class GhommentsCommand(sublime_plugin.TextCommand):
             self.logger.debug("no file name")
 
     def show_phantoms(self, line_markup_dict):
-        self.logger.debug("spooky")
+        # self.logger.debug("spooky")
         self.view.erase_phantoms("GHComments") # remove all existing phantoms
         self.ps = sublime.PhantomSet(self.view, "GHComments")
         self.phantoms = []
+
+        header_markup = '''
+            <body id="gh-comment-heading">
+                <style>
+                        .gh-comment-heading {{
+                          background-color:  white;
+                          color: color(var(--bluish));
+                          font-weight: bold;
+                          margin: 20px;
+                        }}
+                </style>
+                <H1 class="gh-comment-heading">{}</H1>
+                <ul>
+                    <li>530</li>
+                </ul>
+            </body>
+        '''.format("Comments added to lines:")
+
+        header_line  = 0
 
         for (line, markup) in line_markup_dict.items():
             # TODO: Sanity check the line numbers
             r = self.view.line(sublime.Region(self.view.text_point(line, 0), self.view.text_point(line + 1, 0)))
             self.phantoms.append(sublime.Phantom(r, markup, sublime.LAYOUT_BELOW));
+
+        if len(line_markup_dict) > 0:
+            r = sublime.Region(self.view.text_point(header_line, 0), self.view.text_point(header_line, 0))
+            self.phantoms.append(sublime.Phantom(r, header_markup, sublime.LAYOUT_BLOCK));
 
         self.ps.update(self.phantoms)
 
@@ -52,11 +75,6 @@ class GhommentsCommand(sublime_plugin.TextCommand):
         file_comments = data["file_comments"]
         line_markups = list(map(self.get_line_comments, file_comments)) #List[(LineNumber, String)]
         comments_dict = dict(line_markups)
-
-        # final_result = [item for items1 in result for item in items1]
-        # joined = "".join(final_result)
-        # with_outer = "<div>{}</div>".format(joined)
-        self.logger.debug("comments_dict: %s", comments_dict)
         return comments_dict
 
     def get_line_comments(self, lcomment):
