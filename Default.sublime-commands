@@ -1,3 +1,3 @@
 [
-    { "caption": "Github Comments", "command": "ghomments" },
+    { "caption": "Ghomments: Render", "command": "ghomments" },
 ]
