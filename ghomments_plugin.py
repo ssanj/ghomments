@@ -8,6 +8,9 @@ import html
 
 class GhommentsCommand(sublime_plugin.TextCommand):
 
+    comment_regions = []
+    comment_index = None
+
     def run(self, edit, **args):
         FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
         logging.basicConfig(format=FORMAT)
@@ -31,7 +34,7 @@ class GhommentsCommand(sublime_plugin.TextCommand):
                     self.show_phantoms(line_markup_dict)
 
             else:
-                self.logger.debug("file not found")
+                self.logger.debug("comment file not found")
         else:
             self.logger.debug("no file name")
 
@@ -40,6 +43,9 @@ class GhommentsCommand(sublime_plugin.TextCommand):
         self.view.erase_phantoms("GHComments") # remove all existing phantoms
         self.ps = sublime.PhantomSet(self.view, "GHComments")
         self.phantoms = []
+
+
+        comment_lines = self.get_header_lines(line_markup_dict.keys())
 
         header_markup = '''
             <body id="gh-comment-heading">
@@ -52,11 +58,9 @@ class GhommentsCommand(sublime_plugin.TextCommand):
                         }}
                 </style>
                 <H1 class="gh-comment-heading">{}</H1>
-                <ul>
-                    <li>530</li>
-                </ul>
+                {}
             </body>
-        '''.format("Comments added to lines:")
+        '''.format("Comments added to lines:", comment_lines)
 
         header_line  = 0
 
@@ -64,12 +68,21 @@ class GhommentsCommand(sublime_plugin.TextCommand):
             # TODO: Sanity check the line numbers
             r = self.view.line(sublime.Region(self.view.text_point(line, 0), self.view.text_point(line + 1, 0)))
             self.phantoms.append(sublime.Phantom(r, markup, sublime.LAYOUT_BELOW));
+            self.comment_regions.append(r)
 
+        # Add the header if there are any comments to display
         if len(line_markup_dict) > 0:
             r = sublime.Region(self.view.text_point(header_line, 0), self.view.text_point(header_line, 0))
             self.phantoms.append(sublime.Phantom(r, header_markup, sublime.LAYOUT_BLOCK));
 
         self.ps.update(self.phantoms)
+
+    def get_header_lines(self, lines):
+        lines_format = list(map(self.get_header_line, lines))
+        return "<ul>{}</ul>".format("".join(lines_format))
+
+    def get_header_line(self, line):
+       return "<li>{}</li>".format(line)
 
     def get_file_comments(self, data):
         file_comments = data["file_comments"]
