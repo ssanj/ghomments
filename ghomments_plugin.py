@@ -11,11 +11,38 @@ class GhommentsCommand(sublime_plugin.TextCommand):
     comment_regions = []
     comment_index = None
 
+    def is_enabled(self):
+        if self.view and self.view.file_name():
+            return True
+        else:
+            return False
+
+    def is_visible(self):
+        return self.is_enabled()
+
     def run(self, edit, **args):
         FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
         logging.basicConfig(format=FORMAT)
         self.logger = logging.getLogger('ghomments.plugin')
-        self.perform()
+        self.logger.debug("regions: {}".format(str(self.comment_regions)))
+
+        if args.get('index') and len(self.comment_regions) != 0:
+            self.logger.debug("has index supplied")
+            if self.comment_index is not None: #already used
+                self.comment_index = (self.comment_index + 1) % len(self.comment_regions)
+                self.logger.debug("index is {}".format(self.comment_index))
+            else: #first use
+                self.logger.debug("index is 0")
+                self.comment_index = 0
+
+            if not hasattr(self, "phantoms"):
+                self.logger.debug("no phantoms, rerendering")
+                self.perform()
+
+            self.view.show_at_center(self.comment_regions[self.comment_index])
+        else:
+            self.logger.debug("rendering element")
+            self.perform()
 
     # def is_visible(self):
     #     return scoggle.Scoggle.is_visible(self.view, sublime.version())
@@ -44,7 +71,6 @@ class GhommentsCommand(sublime_plugin.TextCommand):
         self.ps = sublime.PhantomSet(self.view, "GHComments")
         self.phantoms = []
 
-
         comment_lines = self.get_header_lines(line_markup_dict.keys())
 
         header_markup = '''
@@ -66,9 +92,11 @@ class GhommentsCommand(sublime_plugin.TextCommand):
 
         for (line, markup) in line_markup_dict.items():
             # TODO: Sanity check the line numbers
-            r = self.view.line(sublime.Region(self.view.text_point(line, 0), self.view.text_point(line + 1, 0)))
+            r = self.view.line(sublime.Region(self.view.text_point(line, 0), self.view.text_point(line, 0)))
             self.phantoms.append(sublime.Phantom(r, markup, sublime.LAYOUT_BELOW));
-            self.comment_regions.append(r)
+
+            if r not in self.comment_regions:
+                self.comment_regions.append(r)
 
         # Add the header if there are any comments to display
         if len(line_markup_dict) > 0:
