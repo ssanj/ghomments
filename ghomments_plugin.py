@@ -60,6 +60,44 @@ class GhommentsPreloaderCommand(sublime_plugin.EventListener):
             return has_comments
 
 
+class GhommentsDiffSwitcherCommand(sublime_plugin.TextCommand):
+
+    def is_enabled(self):
+        if self.view and self.view.file_name():
+            return True
+        else:
+            return False
+
+    def is_visible(self):
+        return self.is_enabled()
+
+
+    def run(self, edit, **args):
+        FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        logging.basicConfig(format=FORMAT)
+        self.logger = logging.getLogger('ghomments.plugin.diff.switcher')
+        view = self.view
+
+        if view.file_name():
+            full_file_name = view.file_name()
+            file_dir = os.path.dirname(full_file_name)
+            file_name = os.path.basename(full_file_name)
+
+            if file_name.endswith(".diff"): #diff file
+                file_name_minus_diff = file_name.replace(".diff", "")
+                target_file_name = os.sep.join([file_dir, file_name_minus_diff])
+            else: #not a diff file
+                file_name_plus_diff =  "{}.diff".format(file_name)
+                target_file_name = os.sep.join([file_dir, file_name_plus_diff])
+
+            print("Ghomments Switcher: file_dir: {}".format(file_dir))
+            print("Ghomments Switcher: file_name: {}".format(file_name))
+            print("Ghomments Switcher: target_file_name: {}".format(target_file_name))
+            has_file = os.path.exists(target_file_name)
+            if has_file:
+                view.window().open_file(target_file_name)
+
+
 class GhommentsCommand(sublime_plugin.TextCommand):
 
     comment_regions = []
