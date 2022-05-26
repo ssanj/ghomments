@@ -1,4 +1,5 @@
 [
     { "keys": ["super+shift+c"], "command": "ghomments", "args": {"index": true}},
     { "keys": ["ctrl+super+shift+c"], "command": "ghomments", "args": {"reset": true}},
+    { "keys": ["super+shift+b"], "command": "ghomments_diff_switcher"},
 ]
